@@ -1,7 +1,7 @@
 #coding: utf-8
 
 import argparse
-from pyquery import PyQuery
+from pyquery import PyQuery as pq
 from datetime import date, timedelta
 from dateutil.parser import parse as parse_time
 
@@ -21,7 +21,7 @@ def grab_data(file_target, airport, start_date, end_date=None):
                 print url
 
                 try:
-                    doc = PyQuery(url=url)
+                    doc = pq(url=url, headers={'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.6,en;q=0.4'})
                     data = doc[0].text_content().split('\n')
                     if not doc:
                         print 'Failed to grab data of ' + str(start_date)
@@ -31,9 +31,9 @@ def grab_data(file_target, airport, start_date, end_date=None):
                     continue
 
                 if not has_insert_header:
-                    fout.write('Date,' + data[0] + '\n')
+                    fout.write('Date,' + data[0].encode('utf8') + '\n')
 
-                data = [ str(start_date) + ',' + d for d in data[1:] if len(d) ]
+                data = [ str(start_date) + ',' + d.encode('utf8') for d in data[1:] if len(d) ]
 
                 fout.write('\n'.join(data))
 
